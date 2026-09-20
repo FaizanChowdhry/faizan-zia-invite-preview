@@ -1651,6 +1651,28 @@
             color: #e4c78c
         }
 
+        .footer-names {
+            display: flex !important;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+            line-height: .86 !important;
+            margin: 18px 0 22px !important;
+            font-size: clamp(3.8rem, 9vw, 5.2rem) !important
+        }
+
+        .footer-names span {
+            display: block !important;
+            line-height: 1 !important;
+            margin: 0 !important
+        }
+
+        .footer-names span:nth-child(2) {
+            font-size: .38em;
+            line-height: .8 !important;
+            margin: 4px 0 !important
+        }
+
         .envelope-stage {
             width: min(82vw, 390px);
             aspect-ratio: .65;
@@ -1745,6 +1767,26 @@
                         <div class="scratch-label">Scratch gently to reveal</div>
                     </div>
                 </div>
+                <div class="scratch-card" id="walima-date">
+                    <div class="eyebrow">A little reveal</div>
+                    <h3>Scratch to reveal</h3>
+                    <div class="scratch-wrap event-date-scratch-wrap">
+                        <div class="scratch-date-label">SCRATCH TO REVEAL THE WALIMA DATE</div>
+                        <div class="heart-scratch-row">
+                            <div class="heart-scratch"><strong>30TH</strong><canvas data-event-heart></canvas></div>
+                            <div class="heart-scratch"><strong>NOV</strong><canvas data-event-heart></canvas></div>
+                            <div class="heart-scratch"><strong>2026</strong><canvas data-event-heart></canvas></div>
+                        </div>
+                        <div class="event-date-countdown" data-event-countdown="2026-11-30T19:00:00+05:30">
+                            <div class="timer">
+                                <div class="unit"><strong data-countdown-days>--</strong><span>Days</span></div>
+                                <div class="unit"><strong data-countdown-hours>--</strong><span>Hours</span></div>
+                                <div class="unit"><strong data-countdown-minutes>--</strong><span>Minutes</span></div>
+                                <div class="unit"><strong data-countdown-seconds>--</strong><span>Seconds</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </section>
             <section class="section families">
                 <div class="eyebrow">With the blessings of Allah</div>
@@ -1825,7 +1867,7 @@
                 <div class="eyebrow">With love</div>
                 <img class="footer-logo" src="assets/WhatsApp%20Image%202026-09-19%20at%203.36.58%20PM.jpeg"
                     alt="Faizan and Zia gold floral monogram">
-                <h2>Faizan<br><span>&amp;</span><br>Zia</h2>
+                <h2 class="footer-names"><span>Faizan</span><span>&amp;</span><span>Zia</span></h2>
                 <p>We look forward to celebrating with you</p>
             </footer>
         </section>
@@ -1835,7 +1877,7 @@
         function startMusic() { if (!inviteMusic) { inviteMusic = new Audio('assets/bismillah-salim-sulaiman-kailash-kher-munawar-masoom_XD0t5NLa.mp3'); inviteMusic.loop = true; inviteMusic.preload = 'auto'; inviteMusic.playsInline = true; inviteMusic.volume = .42; } if (musicStarted) { inviteMusic.play().catch(() => { }); return; } inviteMusic.play().then(() => { musicStarted = true; }).catch(() => { musicStarted = false; }); }
         function openInvite() { startMusic(); if (page.classList.contains('open-page')) return; envelope.classList.add('opened'); setTimeout(() => { page.classList.add('open-page'); setTimeout(() => { document.querySelector('#content').scrollIntoView({ behavior: 'smooth' }); setTimeout(resizeCanvas, 100); setTimeout(resizeCanvas, 500); }, 10000); }, 1000) }
         envelope.addEventListener('pointerdown', startMusic, { passive: true }); envelope.addEventListener('click', openInvite); envelope.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { startMusic(); openInvite() } });
-        const target = new Date('2026-11-28T19:00:00+05:30').getTime(); let countdownStarted = false; function updateCountdown() { if (!countdownStarted) return; let distance = Math.max(0, target - Date.now()); const day = Math.floor(distance / 86400000); distance %= 86400000; const hour = Math.floor(distance / 3600000); distance %= 3600000; const minute = Math.floor(distance / 60000); const second = Math.floor(distance / 1000) % 60; document.querySelector('#days').textContent = String(day).padStart(2, '0'); document.querySelector('#hours').textContent = String(hour).padStart(2, '0'); document.querySelector('#minutes').textContent = String(minute).padStart(2, '0'); document.querySelector('#seconds').textContent = String(second).padStart(2, '0') } function startCountdown() { if (countdownStarted) return; countdownStarted = true; document.querySelector('.countdown-timer').classList.add('is-started'); updateCountdown(); } setInterval(updateCountdown, 1000);
+        const target = new Date('2026-11-28T19:00:00+05:30').getTime(); let countdownStarted = false; function updateCountdown() { if (!countdownStarted) return; let distance = Math.max(0, target - Date.now()); const day = Math.floor(distance / 86400000); distance %= 86400000; const hour = Math.floor(distance / 3600000); distance %= 3600000; const minute = Math.floor(distance / 60000); const second = Math.floor(distance / 1000) % 60; document.querySelector('#days').textContent = String(day).padStart(2, '0'); document.querySelector('#hours').textContent = String(hour).padStart(2, '0'); document.querySelector('#minutes').textContent = String(minute).padStart(2, '0'); document.querySelector('#seconds').textContent = String(second).padStart(2, '0') } function startCountdown() { if (countdownStarted) return; countdownStarted = true; document.querySelector('.countdown-timer').classList.add('is-started'); updateCountdown(); } setInterval(updateCountdown, 1000); function updateWalimaCountdown() { const target = new Date('2026-11-30T19:00:00+05:30').getTime(); let distance = Math.max(0, target - Date.now()); const values = [Math.floor(distance / 86400000), Math.floor(distance / 3600000) % 24, Math.floor(distance / 60000) % 60, Math.floor(distance / 1000) % 60]; const countdown = document.querySelector('[data-event-countdown]'); if (!countdown) return;['days', 'hours', 'minutes', 'seconds'].forEach((name, index) => countdown.querySelector(`[data-countdown-${name}]`).textContent = String(values[index]).padStart(2, '0')); } updateWalimaCountdown(); setInterval(updateWalimaCountdown, 1000);
         const canvas = document.querySelector('#scratchCanvas'); const context = canvas.getContext('2d', { willReadFrequently: true }); const scratchWrap = document.querySelector('#scratchWrap'); const RSVP_EMAIL = 'chowdhary.faizan60@gmail.com'; const RSVP_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwrlz7Z9_p8W5UzZPd3PDTCweOCTBGW4wPG6fGBmL-dlXc_yHly8PFy_qBJp5RhsKMACg/exec'; let drawing = false; let scratched = 0; function resizeCanvas() { const width = scratchWrap.offsetWidth || scratchWrap.clientWidth || 300; const height = scratchWrap.offsetHeight || scratchWrap.clientHeight || 150; canvas.width = width; canvas.height = height; canvas.style.width = width + 'px'; canvas.style.height = height + 'px'; context.setTransform(1, 0, 0, 1, 0, 0); context.clearRect(0, 0, canvas.width, canvas.height); context.fillStyle = 'rgba(173, 138, 92, 0.96)'; context.fillRect(0, 0, canvas.width, canvas.height); context.fillStyle = '#f5e7c8'; context.font = '600 11px Montserrat'; context.textAlign = 'center'; context.fillText('✦  SCRATCH HERE  ✦', canvas.width / 2, canvas.height / 2 + 4); }
         function revealScratchStatus() { const data = context.getImageData(0, 0, canvas.width, canvas.height).data; let transparentPixels = 0; for (let index = 3; index < data.length; index += 4) { if (data[index] < 40) transparentPixels += 1 } const revealRatio = transparentPixels / (canvas.width * canvas.height); if (revealRatio > 0.12) scratchWrap.classList.add('scratched'); }
         let lastPoint = null;
@@ -1863,6 +1905,7 @@
             heartCanvas.addEventListener('mousedown', fallbackStart); heartCanvas.addEventListener('mousemove', fallbackErase); heartCanvas.addEventListener('touchstart', fallbackStart, { passive: false }); heartCanvas.addEventListener('touchmove', fallbackErase, { passive: false }); addEventListener('mouseup', fallbackStop); addEventListener('touchend', fallbackStop);
         });
         const invitationUrl = 'https://faizanchowdhry.github.io/faizan-zia-invite/wedding-invite.html'; const shareOnWhatsApp = message => window.open(`https://wa.me/?text=${encodeURIComponent(`${message}\n\n${invitationUrl}`)}`, '_blank', 'noopener');
+        document.querySelectorAll('[data-event-heart]').forEach(heartCanvas => { const context = heartCanvas.getContext('2d', { willReadFrequently: true }); let drawing = false; let lastPoint = null; const resize = () => { heartCanvas.width = window.innerWidth <= 620 ? 62 : 66; heartCanvas.height = window.innerWidth <= 620 ? 56 : 60; context.fillStyle = '#b58a42'; context.fillRect(0, 0, heartCanvas.width, heartCanvas.height); }; const scratch = event => { if (!drawing) return; heartCanvas.parentElement.classList.add('has-scratched'); const rect = heartCanvas.getBoundingClientRect(); const point = { x: event.clientX - rect.left, y: event.clientY - rect.top }; context.globalCompositeOperation = 'destination-out'; context.lineCap = 'round'; context.lineJoin = 'round'; context.lineWidth = 16; context.beginPath(); if (lastPoint) { context.moveTo(lastPoint.x, lastPoint.y); context.lineTo(point.x, point.y); } else context.moveTo(point.x, point.y); context.lineTo(point.x, point.y); context.stroke(); context.globalCompositeOperation = 'source-over'; lastPoint = point; const data = context.getImageData(0, 0, heartCanvas.width, heartCanvas.height).data; let clearPixels = 0; for (let index = 3; index < data.length; index += 4) if (data[index] < 40) clearPixels += 1; if (clearPixels / (heartCanvas.width * heartCanvas.height) > .12) { heartCanvas.classList.add('revealed'); heartCanvas.parentElement.classList.add('revealed'); const wrap = heartCanvas.closest('.event-date-scratch-wrap'); if (wrap && [...wrap.querySelectorAll('[data-event-heart]')].every(heart => heart.parentElement.classList.contains('revealed'))) wrap.classList.add('event-date-complete'); } }; const stop = () => { drawing = false; lastPoint = null; }; const start = event => { event.preventDefault(); drawing = true; lastPoint = null; try { heartCanvas.setPointerCapture(event.pointerId); } catch { } scratch(event); }; resize(); heartCanvas.addEventListener('pointerdown', start); heartCanvas.addEventListener('pointermove', scratch); heartCanvas.addEventListener('pointerup', stop); heartCanvas.addEventListener('pointercancel', stop); heartCanvas.addEventListener('mousedown', start); heartCanvas.addEventListener('mousemove', scratch); heartCanvas.addEventListener('touchstart', start, { passive: false }); heartCanvas.addEventListener('touchmove', scratch, { passive: false }); addEventListener('mouseup', stop); addEventListener('touchend', stop); });
         document.querySelector('#share-nikah').addEventListener('click', () => shareOnWhatsApp('Join us for the Nikah on 28th November from 7 PM at Kohinoor Marriage Lawn, 4RQQ+332, Veera Desai Rd, Mhada Colony, Prathmesh Complex, Andheri West, Mumbai, Maharashtra 400053.'));
         document.querySelector('#share-walima').addEventListener('click', () => shareOnWhatsApp('Join us for the Dawat-e-Walima on 30th November at Sir Elly Kadoorie School and Junior College, XR8Q+HM5, Shivdas Champsi Rd, Opposite Chaitya Temple, Tadwadi, Mazgaon, Mumbai, Maharashtra 400010.'));
         const rsvpForm = document.querySelector('#rsvp');
@@ -3453,6 +3496,41 @@
             opacity: .86;
             transition: opacity .35s ease;
             background: linear-gradient(135deg, #b58a42, #e4bd69 48%, #956725)
+        }
+
+        .event-date-countdown {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            opacity: 0;
+            padding-top: 68px;
+            transition: opacity .45s ease
+        }
+
+        .event-date-scratch-wrap.event-date-complete .event-date-countdown {
+            opacity: 1 !important
+        }
+
+        .event-date-countdown .timer {
+            display: flex;
+            justify-content: center;
+            gap: 12px
+        }
+
+        .event-date-countdown .unit strong {
+            display: block;
+            color: #1f1b17 !important;
+            font: 500 38px 'Cormorant Garamond', serif
+        }
+
+        .event-date-countdown .unit span {
+            color: #1f1b17 !important;
+            display: block;
+            font: 600 8px Montserrat;
+            letter-spacing: .12em;
+            text-transform: uppercase
         }
 
         @media(max-width:620px) {
