@@ -867,18 +867,40 @@
             pointer-events: none;
             color: #b58a42;
             font-size: 18px;
-            animation: petal-fall var(--fall) linear forwards
+            --petal-opacity: .2;
+            opacity: var(--petal-opacity);
+            animation: petal-fall var(--fall) linear forwards;
+            will-change: transform, opacity;
+            backface-visibility: hidden
         }
 
         .petal.heart {
             color: #8f6429;
-            font-size: 20px
+            font-size: 20px;
+            --petal-opacity: .18
         }
 
         @keyframes petal-fall {
+            0% {
+                transform: translate3d(0, -5vh, 0) rotate(0);
+                opacity: 0
+            }
+
+            12% {
+                opacity: var(--petal-opacity)
+            }
+
+            50% {
+                transform: translate3d(calc(var(--drift) * .45), 50vh, 0) rotate(150deg)
+            }
+
+            88% {
+                opacity: calc(var(--petal-opacity) * .8)
+            }
+
             to {
                 transform: translate3d(var(--drift), 110vh, 0) rotate(620deg);
-                opacity: .1
+                opacity: 0
             }
         }
 
@@ -1746,10 +1768,10 @@
                 </div>
                 <div class="scratch-card">
                     <div class="eyebrow">A little reveal</div>
-                    <h3>Scratch to reveal</h3>
+                    <h3>Touch or scratch to reveal</h3>
                     <p>Discover the time remaining until our celebration</p>
                     <div class="scratch-wrap" id="scratchWrap">
-                        <div class="scratch-date-label">Scratch to reveal the date</div>
+                        <div class="scratch-date-label">Touch or scratch all three hearts to start countdown</div>
                         <div class="heart-scratch-row">
                             <div class="heart-scratch"><strong>28TH</strong><canvas data-heart-scratch></canvas></div>
                             <div class="heart-scratch"><strong>NOV</strong><canvas data-heart-scratch></canvas></div>
@@ -1769,9 +1791,9 @@
                 </div>
                 <div class="scratch-card" id="walima-date">
                     <div class="eyebrow">A little reveal</div>
-                    <h3>Scratch to reveal</h3>
+                    <h3>Touch or scratch to reveal</h3>
                     <div class="scratch-wrap event-date-scratch-wrap">
-                        <div class="scratch-date-label">SCRATCH TO REVEAL THE WALIMA DATE</div>
+                        <div class="scratch-date-label">TOUCH OR SCRATCH EACH HEART TO REVEAL WALIMA DATE</div>
                         <div class="heart-scratch-row">
                             <div class="heart-scratch"><strong>30TH</strong><canvas data-event-heart></canvas></div>
                             <div class="heart-scratch"><strong>NOV</strong><canvas data-event-heart></canvas></div>
@@ -1884,6 +1906,31 @@
         function scratch(event) { if (!drawing) return; const rect = canvas.getBoundingClientRect(); const point = { x: Math.max(0, Math.min(event.clientX - rect.left, rect.width)), y: Math.max(0, Math.min(event.clientY - rect.top, rect.height)) }; context.globalCompositeOperation = 'destination-out'; context.lineCap = 'round'; context.lineJoin = 'round'; context.lineWidth = 40; context.beginPath(); if (lastPoint) { context.moveTo(lastPoint.x, lastPoint.y); context.lineTo(point.x, point.y); } else { context.moveTo(point.x, point.y); context.lineTo(point.x, point.y); } context.stroke(); context.globalCompositeOperation = 'source-over'; lastPoint = point; revealScratchStatus(); }
         function stopScratch() { drawing = false; lastPoint = null; }
         resizeCanvas(); addEventListener('resize', () => { setTimeout(resizeCanvas, 50); }); canvas.addEventListener('pointerdown', event => { event.preventDefault(); drawing = true; lastPoint = null; canvas.setPointerCapture(event.pointerId); scratch(event); }); canvas.addEventListener('pointermove', event => { if (drawing) scratch(event); }); canvas.addEventListener('pointerup', stopScratch); canvas.addEventListener('pointerleave', stopScratch); canvas.addEventListener('pointercancel', stopScratch);
+        function revealDateHeart(heartCanvas) {
+            if (heartCanvas.classList.contains('revealed')) return;
+            heartCanvas.getContext('2d').clearRect(0, 0, heartCanvas.width, heartCanvas.height);
+            heartCanvas.classList.add('revealed');
+            heartCanvas.parentElement.classList.add('revealed');
+            if (heartCanvas.matches('[data-heart-scratch]')) {
+                if ([...document.querySelectorAll('[data-heart-scratch]')].every(heart => heart.classList.contains('revealed'))) startCountdown();
+                return;
+            }
+            const wrap = heartCanvas.closest('.event-date-scratch-wrap');
+            if (wrap && [...wrap.querySelectorAll('[data-event-heart]')].every(heart => heart.classList.contains('revealed'))) wrap.classList.add('event-date-complete');
+        }
+        document.querySelectorAll('[data-heart-scratch], [data-event-heart]').forEach(heartCanvas => {
+            heartCanvas.addEventListener('pointerdown', event => {
+                if (event.pointerType !== 'touch') return;
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                revealDateHeart(heartCanvas);
+            }, { capture: true });
+            heartCanvas.addEventListener('touchstart', event => {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                revealDateHeart(heartCanvas);
+            }, { capture: true, passive: false });
+        });
         document.querySelectorAll('[data-heart-scratch]').forEach(heartCanvas => {
             const heartContext = heartCanvas.getContext('2d', { willReadFrequently: true });
             let heartDrawing = false;
@@ -1909,7 +1956,43 @@
         document.querySelector('#share-nikah').addEventListener('click', () => shareOnWhatsApp('Join us for the Nikah on 28th November from 7 PM at Kohinoor Marriage Lawn, 4RQQ+332, Veera Desai Rd, Mhada Colony, Prathmesh Complex, Andheri West, Mumbai, Maharashtra 400053.'));
         document.querySelector('#share-walima').addEventListener('click', () => shareOnWhatsApp('Join us for the Dawat-e-Walima on 30th November at Sir Elly Kadoorie School and Junior College, XR8Q+HM5, Shivdas Champsi Rd, Opposite Chaitya Temple, Tadwadi, Mazgaon, Mumbai, Maharashtra 400010.'));
         const rsvpForm = document.querySelector('#rsvp');
-        function showerPetals() { if (document.body.dataset.petals) return; document.body.dataset.petals = 'done'; for (let index = 0; index < 150; index++) { const petal = document.createElement('span'); const heart = index % 5 === 0; petal.className = heart ? 'petal heart' : 'petal'; petal.textContent = heart ? '♥' : index % 3 === 0 ? '✿' : '❀'; petal.style.left = Math.random() * 100 + 'vw'; petal.style.setProperty('--drift', (Math.random() * 260 - 130) + 'px'); petal.style.setProperty('--fall', (18 + Math.random() * 8) + 's'); petal.style.animationDelay = (Math.random() * 6) + 's'; petal.style.fontSize = (12 + Math.random() * 13) + 'px'; document.body.appendChild(petal); setTimeout(() => petal.remove(), 32000) } }
+        function showerPetals() {
+            if (document.body.dataset.petals) return;
+            document.body.dataset.petals = 'done';
+            let petalIndex = 0;
+            let petalTimer = null;
+            const createPetal = (delay = 0) => {
+                const index = petalIndex++;
+                const petal = document.createElement('span');
+                const heart = index % 5 === 0;
+                petal.className = heart ? 'petal heart' : 'petal';
+                petal.textContent = heart ? '♥' : index % 3 === 0 ? '✿' : '❀';
+                petal.style.left = Math.random() * 100 + 'vw';
+                petal.style.setProperty('--drift', (Math.random() * 90 - 45) + 'px');
+                const fallDuration = 28 + Math.random() * 8;
+                petal.style.setProperty('--fall', fallDuration + 's');
+                petal.style.animationDelay = delay + 's';
+                petal.style.fontSize = (12 + Math.random() * 8) + 'px';
+                document.body.appendChild(petal);
+                setTimeout(() => petal.remove(), (fallDuration + delay + 1) * 1000);
+            };
+            const startPetalFlow = () => {
+                if (!petalTimer && !document.hidden) petalTimer = setInterval(() => createPetal(), 1200);
+            };
+            const stopPetalFlow = () => {
+                if (!petalTimer) return;
+                clearInterval(petalTimer);
+                petalTimer = null;
+            };
+            for (let index = 0; index < 10; index++) createPetal(Math.random() * 6);
+            startPetalFlow();
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) stopPetalFlow();
+                else startPetalFlow();
+            });
+            addEventListener('pagehide', stopPetalFlow);
+            addEventListener('pageshow', startPetalFlow);
+        }
         envelope.addEventListener('click', showerPetals);
         envelope.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') showerPetals() });
         rsvpForm.addEventListener('submit', async event => {
@@ -3424,9 +3507,9 @@
             top: 5px;
             left: 0;
             right: 0;
-            color: #8c642b;
-            font: 600 8px Montserrat;
-            letter-spacing: .13em;
+            color: #493016;
+            font: 700 8px Montserrat;
+            letter-spacing: .08em;
             text-transform: uppercase
         }
 
@@ -3462,10 +3545,10 @@
             z-index: 11;
             display: grid;
             place-items: center;
-            color: #fffdf4;
+            color: #321b0b;
             font-size: 17px;
             line-height: 1;
-            text-shadow: 0 1px 4px rgba(91, 55, 16, .6);
+            text-shadow: 0 1px 2px rgba(255, 253, 244, .95);
             opacity: 0;
             transition: opacity .35s ease;
             pointer-events: none
